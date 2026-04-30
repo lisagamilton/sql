@@ -1,0 +1,85 @@
+-- LOGICAL STATEMENTS
+-- IF STATEMENT
+-- if(CONDITION/EXPRESSION, TRUE SCENARIO, FALSE SCENARIO)
+
+-- classify the emp salary based on HIGH SALARY and STANDARD SALARY
+use session2;
+
+SELECT 
+    last_name,
+    dept,
+    country,
+    salary,
+    IF(salary >= 10000,
+        'high salary',
+        'standard salary') AS salary_classification
+FROM
+    emp_record_table
+ORDER BY salary DESC;
+
+SELECT 
+    last_name,
+    continent,
+    dept,
+    salary,
+    IF(salary > 12000,
+        'Grade A salary',
+        IF(salary > 10000,
+            'Grade B salary',
+            IF(salary > 9000,
+                'Grade C salary',
+                IF(salary > 7000,
+                    'Grade D salary',
+                    IF(salary > 5000, 'Grade E salary', 'Grade F salary'))))) AS salary_classification
+FROM
+    emp_record_table
+ORDER BY salary DESC;
+
+SELECT last_name, first_name, country, salary,
+if(country = 'usa' and salary > 12000, 'High salary USA',
+if(country = 'usa' and salary > 9000, 'Standard salary USA',
+if(country = 'usa' and salary > 8000, 'New joiners USA',
+if(country = 'canada' and salary > 10000, 'High salary Canada',
+if(country = 'canada' and salary > 5000, 'Standard salary Canada',
+if(country = 'germany' and salary > 10000, 'High salary Germany',
+if(country = 'germany' and salary > 5000, 'Standard salary Germany',
+										'Under review'))))))) as country_wise_segment
+FROM emp_record_table
+WHERE country IN('usa','canada','germany')
+ORDER BY country, salary DESC;
+
+-- case statements
+-- classification of experience as managerial and senior
+
+SELECT 
+    last_name,
+    dept,
+    country,
+    CASE
+        WHEN exp > 12 THEN 'Managerial grade'
+        ELSE 'Senior grade'
+    END AS experience_classification,
+    CASE
+        WHEN salary > 9000 THEN 'High salary'
+        ELSE 'Standard salary'
+    END AS salary_classification
+FROM
+    emp_record_table
+ORDER BY exp DESC;
+
+-- classification of experience based on dept(retail, finance, healthcare)
+
+SELECT first_name, last_name, dept, exp,
+CASE 
+WHEN dept = 'retail' and exp > 13 THEN 'Senior Manager Lvl Retail'
+WHEN dept = 'retail' and exp > 12 THEN 'Manager Lvl Retail'
+WHEN dept = 'retail' and exp > 6 THEN 'Team Lead Level Retail'
+WHEN dept = 'finance' and exp > 12 THEN 'Snr Manager Lvl Finance'
+WHEN dept = 'finance' and exp > 10 THEN 'Manager Lvl Finance'
+WHEN dept = 'healthcare' and exp > 10 THEN  'Snr Manager Lvl Healthcare'
+WHEN dept = 'healthcare' and exp > 8 THEN 'Manager Lvl Healthcare'
+ELSE 'Under Review'
+END AS 'Departwise Experience Classification'
+FROM emp_record_table
+WHERE dept IN('retail','finance','healthcare')
+ORDER BY dept, exp DESC;
