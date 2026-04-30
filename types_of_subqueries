@@ -1,0 +1,110 @@
+-- CONCEPT OF SUBQUERY
+
+-- provide the client with the emp
+-- details with highest salary !
+
+SELECT MAX(salary), last_name
+FROM emp_record_table; -- incorrect
+-- above query is incorrect, as we cannot segment data with query having
+-- aggregate function without 'group by'
+-- and incorrect syntax !
+
+SELECT * FROM emp_record_table
+where salary = (SELECT MAX(salary) FROM emp_record_table); -- correct
+
+-- sub query is divided into 2 parts: inner and outer query
+-- secondly, the inner query gets executed FIRST and then 
+-- the outer query is executed !
+
+-- SINGLE-ROW Sub-query
+-- provide the client with the least salary emp details
+
+SELECT * FROM emp_record_table	
+where salary = (SELECT MIN(salary)
+FROM emp_record_table);
+
+-- mult-row subquery
+SELECT * FROM emp_record_table
+WHERE emp_id IN(
+SELECT emp_id 
+FROM emp_record_table
+WHERE exp >= 8)
+ORDER BY exp DESC;
+-- client requirement was to gather emps with experience of 8 or higher
+
+-- Client requirement is to pull 
+-- all necessary employee details with highest salaries
+-- in each department
+
+-- MULTI COLUMN sub-query
+SELECT emp_id, last_name, dept, salary
+FROM emp_record_table
+WHERE (dept,salary) IN
+(SELECT dept,max(salary)
+FROM emp_record_table 
+GROUP BY 1);
+
+-- client requirement is to extract employees with highest experience
+-- from each continent
+
+SELECT * FROM emp_record_table
+WHERE (continent, exp) IN(SELECT continent, max(exp)
+FROM emp_record_table
+GROUP BY 1);
+
+-- CO-RELATED sub-query
+
+-- client requirement is to extract emps 
+-- details with more than average salary
+
+SELECT * FROM emp_record_table	
+WHERE salary > (SELECT AVG(salary) 
+FROM emp_record_table);
+
+-- provide client with the emps 
+-- details with salaries less than average salary
+SELECT * FROM emp_record_table	
+WHERE salary < (SELECT AVG(salary) 
+FROM emp_record_table)
+order by salary DESC;
+
+-- NESTED SUBQUERY
+-- client requirement is to extract the emps details
+-- with the highest salary from the list of employees
+-- having salaries less than average salary
+
+SELECT * FROM emp_record_table
+WHERE salary =
+(SELECT MAX(salary) FROM emp_record_table
+WHERE salary < (
+SELECT avg(salary) FROM emp_record_table
+));
+
+-- we can reach the same result differently
+SELECT * FROM emp_record_table	
+WHERE salary <
+(SELECT AVG(salary) FROM emp_record_table)
+ORDER BY salary DESC
+LIMIT 1;
+
+-- SCALAR SUB-QUERY
+SELECT last_name, dept, salary, country,
+(SELECT sum(salary) FROM emp_record_table) AS total_salary
+FROM emp_record_table;	
+
+-- client requirement is to extract emps
+-- with least salary from USA
+SELECT * FROM emp_record_table
+-- WHERE country = 'usa' and salary = 
+WHERE salary = (
+SELECT min(salary) FROM emp_record_table
+WHERE country = 'usa'); -- incorrect, it shows not only usa but canada as well 
+
+SELECT * FROM emp_record_table
+WHERE country = 'usa' 
+and salary = (
+SELECT MIN(salary) FROM emp_record_table 
+WHERE country = 'usa');
+
+-- you have to write the filtering 'where' in each inner and outer query 
+-- for the result to be correct
